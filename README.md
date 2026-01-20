@@ -5,11 +5,11 @@ A Python application that scrapes AI news from multiple sources, stores them in 
 ## Features
 
 - Automated scraping every 6 hours
--  AI-powered article summarization and tagging (Gemini)
--  Full-text search with PostgreSQL
--  Trending topics analysis
--  Web dashboard with modern UI
--  REST API
+- AI-powered article summarization and tagging (Gemini)
+- Full-text search with PostgreSQL
+- Trending topics analysis
+- Web dashboard with modern UI
+- REST API
 
 ## Sources
 
@@ -33,6 +33,8 @@ Create `.env` file:
 DATABASE_URL=postgresql://user:password@host/database
 GEMINI_API_KEY=your_gemini_api_key
 ```
+
+You can copy `.env.example` as a starting point and then update values.
 
 3. **Run database migration**
 ```bash
