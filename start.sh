@@ -12,4 +12,4 @@ python scripts/migrate_search.py
 
 # Start the application
 echo "✨ Starting web server..."
-exec uvicorn app.api.main:app --host 0.0.0.0 --port $PORT
+exec uvicorn app.api.main:app --host 0.0.0.0 --port "${PORT:-8000}"
