@@ -22,6 +22,7 @@ A Python application that scrapes AI news from multiple sources, stores them in 
 ## Quick Setup
 
 1. **Install dependencies**
+
 ```bash
 pip install -r requirements.txt
 ```
@@ -29,6 +30,7 @@ pip install -r requirements.txt
 2. **Configure environment**
 
 Create `.env` file:
+
 ```bash
 DATABASE_URL=postgresql://user:password@host/database
 GEMINI_API_KEY=your_gemini_api_key
@@ -37,11 +39,13 @@ GEMINI_API_KEY=your_gemini_api_key
 You can copy `.env.example` as a starting point and then update values.
 
 3. **Run database migration**
+
 ```bash
 python scripts/migrate_search.py
 ```
 
 4. **Start the application**
+
 ```bash
 # Web dashboard with auto-scraping
 uvicorn app.api.main:app --host 0.0.0.0 --port 8000
@@ -50,20 +54,25 @@ uvicorn app.api.main:app --host 0.0.0.0 --port 8000
 python run.py
 ```
 
+If you are using Docker Compose, run `docker compose up --build` and open `http://localhost:8000`.
+
 Visit: http://localhost:8000
 
 ## API Endpoints
 
 ### Articles
+
 - `GET /articles` - List articles
 - `GET /articles/{id}/related` - Get related articles
 
 ### Search
+
 - `GET /search?q=query&source=openai&tags=gpt-4&limit=20&page=1`
 - `GET /trending?days=7` - Trending topics
 - `GET /popular?days=7` - Popular articles
 
 ### Admin
+
 - `GET /health` - System health check
 - `POST /admin/trigger-scrape` - Manual scrape trigger
 
@@ -88,6 +97,7 @@ ai-news-agg/
 ### Add YouTube Channels
 
 Edit `app/scheduler.py`:
+
 ```python
 YOUTUBE_CHANNELS = [
     "UCn8ujwUInbJkBhffxqAPBVQ",  # Your channel ID
@@ -97,6 +107,7 @@ YOUTUBE_CHANNELS = [
 ### Change Scraping Schedule
 
 Edit `app/scheduler.py`:
+
 ```python
 # Every 6 hours (default)
 trigger=CronTrigger(hour="*/6")
@@ -115,4 +126,3 @@ trigger=CronTrigger(hour=8, minute=0)
 - **AI**: Google Gemini API
 - **Scraping**: BeautifulSoup, feedparser, youtube-transcript-api
 - **Scheduling**: APScheduler
-
