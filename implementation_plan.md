@@ -7,7 +7,6 @@ A personalized AI news aggregator that:
 2. **Understands** what each user likes using ML (embeddings + interaction tracking)
 3. **Recommends** relevant articles/videos ranked by user preference
 4. **Delivers** a daily digest via email or messaging (Telegram/WhatsApp)
-
 ---
 
 ## 📊 Current Progress

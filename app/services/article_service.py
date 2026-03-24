@@ -1,45 +1,105 @@
 from sqlalchemy.orm import Session
-from app.models.article import Article
-from app.scrapers.youtube import ChannelVideo
+from sqlalchemy.exc import IntegrityError
+from datetime import datetime
+from typing import Optional
+from dataclasses import dataclass
+
+from app.models.base import SessionLocal
+from app.models.article import Article, Source, Channel
 
 
-def save_videos_to_db(
-    db: Session, 
-    videos: list[ChannelVideo], 
-    source_id: int, 
-    channel_id: int
-) -> int:
-    """Save scraped YouTube videos to the articles table, skipping duplicates.
-    
-    Args:
-        db: Database session
-        videos: List of ChannelVideo objects from the scraper
-        source_id: ID of the Source record (e.g., YouTube source)
-        channel_id: ID of the Channel record (e.g., specific YouTube channel)
-    
-    Returns:
-        Number of new articles saved
-    """
+@dataclass
+class ArticleInput:
+    title: str
+    url: str
+    published_at: datetime
+    source_name: str
+    source_type: str
+    content_text: Optional[str] = None
+    channel_external_id: Optional[str] = None
+    channel_name: Optional[str] = None
+
+
+def from_scraped_article(a) -> ArticleInput:
+    return ArticleInput(
+        title=a.title,
+        url=a.url,
+        content_text=a.content_text,
+        published_at=a.published_at,
+        source_name="openai",
+        source_type="blog",
+    )
+
+
+def from_channel_video(v, channel_id: str) -> ArticleInput:
+    return ArticleInput(
+        title=v.title,
+        url=v.url,
+        content_text=v.transcript,
+        published_at=v.published_at,
+        source_name="youtube",
+        source_type="youtube",
+        channel_external_id=channel_id,
+        channel_name=channel_id,
+    )
+
+
+def save_articles(articles: list[ArticleInput]) -> dict:
+    db: Session = SessionLocal()
     saved = 0
-    for video in videos:
-        # Skip if already exists (dedupe by URL)
-        exists = db.query(Article).filter(Article.url == video.url).first()
-        if exists:
-            continue
+    skipped = 0
 
-        article = Article(
-            source_id=source_id,
-            channel_id=channel_id,
-            title=video.title,
-            url=video.url,
-            external_id=video.video_id,
-            content_text=video.transcript,  # The transcript from YouTube
-            published_at=video.published_at,
-            summary=None,       # Will be filled in Phase 3 (AI summarizer)
-            embedding=None,     # Will be filled in Phase 3 (embedding generator)
-        )
-        db.add(article)
-        saved += 1
+    try:
+        for item in articles:
+            source = db.query(Source).filter(Source.name == item.source_name).first()
+            if not source:
+                source = Source(name=item.source_name, source_type=item.source_type)
+                db.add(source)
+                db.flush()
 
-    db.commit()
-    return saved
+            channel_id = None
+            if item.channel_external_id:
+                channel = db.query(Channel).filter(Channel.external_id == item.channel_external_id).first()
+                if not channel:
+                    channel = Channel(
+                        source_id=source.id,
+                        external_id=item.channel_external_id,
+                        name=item.channel_name or item.channel_external_id,
+                    )
+                    db.add(channel)
+                    db.flush()
+                channel_id = channel.id
+
+            article = Article(
+                source_id=source.id,
+                channel_id=channel_id,
+                title=item.title,
+                url=item.url,
+                content_text=item.content_text,
+                published_at=item.published_at,
+            )
+            db.add(article)
+
+            try:
+                db.flush()
+                saved += 1
+            except IntegrityError:
+                db.rollback()
+                skipped += 1
+
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        raise e
+    finally:
+        db.close()
+
+    return {"saved": saved, "skipped": skipped}
+
+
+def get_recent_articles(limit: int = 20) -> list[Article]:
+    db: Session = SessionLocal()
+    try:
+        return db.query(Article).order_by(Article.published_at.desc()).limit(limit).all()
+    finally:
+        db.close()
