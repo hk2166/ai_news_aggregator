@@ -3,7 +3,6 @@ from app.services.article_service import (
     from_scraped_article,
     from_channel_video,
     get_recent_articles,
-    get_unprocessed_articles,
 )
 
 __all__ = [
@@ -11,5 +10,4 @@ __all__ = [
     "from_scraped_article",
     "from_channel_video",
     "get_recent_articles",
-    "get_unprocessed_articles",
 ]
