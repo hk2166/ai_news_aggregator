@@ -1,9 +1,7 @@
-from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 from typing import Optional
 from dataclasses import dataclass
-
 from app.models.base import SessionLocal
 from app.models.article import Article, Source, Channel
 
@@ -22,32 +20,22 @@ class ArticleInput:
 
 def from_scraped_article(a) -> ArticleInput:
     return ArticleInput(
-        title=a.title,
-        url=a.url,
-        content_text=a.content_text,
-        published_at=a.published_at,
-        source_name="openai",
-        source_type="blog",
+        title=a.title, url=a.url, content_text=a.content_text,
+        published_at=a.published_at, source_name="openai", source_type="blog",
     )
 
 
 def from_channel_video(v, channel_id: str) -> ArticleInput:
     return ArticleInput(
-        title=v.title,
-        url=v.url,
-        content_text=v.transcript,
-        published_at=v.published_at,
-        source_name="youtube",
-        source_type="youtube",
-        channel_external_id=channel_id,
-        channel_name=channel_id,
+        title=v.title, url=v.url, content_text=v.transcript,
+        published_at=v.published_at, source_name="youtube", source_type="youtube",
+        channel_external_id=channel_id, channel_name=channel_id,
     )
 
 
 def save_articles(articles: list[ArticleInput]) -> dict:
-    db: Session = SessionLocal()
-    saved = 0
-    skipped = 0
+    db = SessionLocal()
+    saved = skipped = 0
 
     try:
         for item in articles:
@@ -61,25 +49,14 @@ def save_articles(articles: list[ArticleInput]) -> dict:
             if item.channel_external_id:
                 channel = db.query(Channel).filter(Channel.external_id == item.channel_external_id).first()
                 if not channel:
-                    channel = Channel(
-                        source_id=source.id,
-                        external_id=item.channel_external_id,
-                        name=item.channel_name or item.channel_external_id,
-                    )
+                    channel = Channel(source_id=source.id, external_id=item.channel_external_id,
+                                      name=item.channel_name or item.channel_external_id)
                     db.add(channel)
                     db.flush()
                 channel_id = channel.id
 
-            article = Article(
-                source_id=source.id,
-                channel_id=channel_id,
-                title=item.title,
-                url=item.url,
-                content_text=item.content_text,
-                published_at=item.published_at,
-            )
-            db.add(article)
-
+            db.add(Article(source_id=source.id, channel_id=channel_id, title=item.title,
+                           url=item.url, content_text=item.content_text, published_at=item.published_at))
             try:
                 db.flush()
                 saved += 1
@@ -98,7 +75,7 @@ def save_articles(articles: list[ArticleInput]) -> dict:
 
 
 def get_recent_articles(limit: int = 20) -> list[Article]:
-    db: Session = SessionLocal()
+    db = SessionLocal()
     try:
         return db.query(Article).order_by(Article.published_at.desc()).limit(limit).all()
     finally:

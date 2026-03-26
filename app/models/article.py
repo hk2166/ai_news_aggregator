@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey, JSON
 from sqlalchemy.sql import func
 from app.models.base import Base
 
@@ -26,5 +26,8 @@ class Article(Base):
     title = Column(String(500))
     url = Column(String(1000), unique=True)
     content_text = Column(Text, nullable=True)
+    summary = Column(Text, nullable=True)
+    tags = Column(JSON, nullable=True, default=list)
+    is_processed = Column(Boolean, default=False)
     published_at = Column(DateTime)
     created_at = Column(DateTime, server_default=func.now())
