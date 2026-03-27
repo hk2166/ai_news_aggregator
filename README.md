@@ -1,6 +1,6 @@
 # AI News Aggregator
 
-A Python application that scrapes AI news from OpenAI blog and YouTube channels, stores them in PostgreSQL, and provides search functionality.
+A Python application that scrapes AI news from multiple sources, stores them in PostgreSQL, and provides search functionality.
 
 ## Features
 
@@ -10,6 +10,15 @@ A Python application that scrapes AI news from OpenAI blog and YouTube channels,
 - 📊 Trending topics analysis
 - 🌐 Web dashboard with modern UI
 - 📡 REST API
+
+## Sources
+
+- **OpenAI Blog** - Official OpenAI announcements
+- **YouTube** - 11 AI-focused channels
+- **Hacker News** - AI-related discussions
+- **Reddit** - r/MachineLearning, r/artificial, r/OpenAI, r/LocalLLaMA, r/StableDiffusion
+- **ArXiv** - Latest AI/ML research papers
+- **RSS Feeds** - Google AI, DeepMind, AWS ML, Microsoft AI, Hugging Face
 
 ## Quick Setup
 

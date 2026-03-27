@@ -7,6 +7,10 @@ import logging
 from app.models.base import engine, Base, SessionLocal
 from app.scrapers.openai_scraper import OpenAIBlogScraper
 from app.scrapers.youtube import YouTubeScraper
+from app.scrapers.hackernews_scraper import HackerNewsScraper
+from app.scrapers.reddit_scraper import RedditScraper
+from app.scrapers.arxiv_scraper import ArXivScraper
+from app.scrapers.rss_feed_scraper import RSSFeedScraper, AI_RSS_FEEDS
 from app.services.article_service import save_articles, from_scraped_article, from_channel_video
 from app.services.pipeline import process_new_articles
 from app.services.search_service import update_search_vectors
@@ -38,8 +42,8 @@ def scrape_all_sources():
         
         # Scrape OpenAI blog
         logger.info("Scraping OpenAI blog...")
-        openai_articles = OpenAIBlogScraper().scrape(hours=168)
-        r = save_articles([from_scraped_article(a) for a in openai_articles])
+        openai_articles = OpenAIBlogScraper().scrape(hours=96)
+        r = save_articles([from_scraped_article(a, "openai", "blog") for a in openai_articles])
         logger.info(f"OpenAI: {r['saved']} saved, {r['skipped']} skipped")
         
         # Scrape YouTube channels
@@ -49,7 +53,7 @@ def scrape_all_sources():
         
         for cid in YOUTUBE_CHANNELS:
             try:
-                videos = yt.scrape_channel(cid, hours=168)
+                videos = yt.scrape_channel(cid, hours=96)
                 r = save_articles([from_channel_video(v, cid) for v in videos])
                 total_saved += r['saved']
                 total_skipped += r['skipped']
@@ -58,6 +62,43 @@ def scrape_all_sources():
                 logger.error(f"Error scraping channel {cid}: {e}")
         
         logger.info(f"YouTube total: {total_saved} saved, {total_skipped} skipped")
+        
+        # Scrape Hacker News
+        logger.info("Scraping Hacker News...")
+        try:
+            hn_articles = HackerNewsScraper().scrape(hours=96, limit=50)
+            r = save_articles([from_scraped_article(a, "hackernews", "forum") for a in hn_articles])
+            logger.info(f"HackerNews: {r['saved']} saved, {r['skipped']} skipped")
+        except Exception as e:
+            logger.error(f"Error scraping HackerNews: {e}")
+        
+        # Scrape Reddit
+        logger.info("Scraping Reddit...")
+        try:
+            reddit_articles = RedditScraper().scrape(hours=96, limit_per_sub=10)
+            r = save_articles([from_scraped_article(a, "reddit", "forum") for a in reddit_articles])
+            logger.info(f"Reddit: {r['saved']} saved, {r['skipped']} skipped")
+        except Exception as e:
+            logger.error(f"Error scraping Reddit: {e}")
+        
+        # Scrape ArXiv
+        logger.info("Scraping ArXiv...")
+        try:
+            arxiv_articles = ArXivScraper().scrape(hours=96, max_results=30)
+            r = save_articles([from_scraped_article(a, "arxiv", "research") for a in arxiv_articles])
+            logger.info(f"ArXiv: {r['saved']} saved, {r['skipped']} skipped")
+        except Exception as e:
+            logger.error(f"Error scraping ArXiv: {e}")
+        
+        # Scrape RSS feeds
+        logger.info("Scraping RSS feeds...")
+        try:
+            rss_scraper = RSSFeedScraper()
+            rss_articles = rss_scraper.scrape_multiple_feeds(AI_RSS_FEEDS, hours=96)
+            r = save_articles([from_scraped_article(a, "rss", "blog") for a in rss_articles])
+            logger.info(f"RSS Feeds: {r['saved']} saved, {r['skipped']} skipped")
+        except Exception as e:
+            logger.error(f"Error scraping RSS feeds: {e}")
         
         # Process articles (summarize + tag)
         logger.info("Processing new articles...")

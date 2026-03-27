@@ -141,6 +141,10 @@ header {
   <button class="filter-btn active" onclick="filterSource('all', this)">All sources</button>
   <button class="filter-btn" onclick="filterSource('openai', this)">OpenAI</button>
   <button class="filter-btn" onclick="filterSource('youtube', this)">YouTube</button>
+  <button class="filter-btn" onclick="filterSource('hackernews', this)">Hacker News</button>
+  <button class="filter-btn" onclick="filterSource('reddit', this)">Reddit</button>
+  
+  
 </div>
 
 <div class="layout">
@@ -202,9 +206,18 @@ function renderFeed(articles) {
   }
   feed.innerHTML = articles.map((a, i) => {
     const isYT = a.source === 'youtube';
-    const sourceLabel = a.source === 'openai' ? 'OpenAI Blog'
-      : isYT ? `YouTube — ${a.channel || 'Channel'}`
-      : a.source;
+    const isHN = a.source === 'hackernews';
+    const isReddit = a.source === 'reddit';
+    
+    
+    let sourceLabel = a.source;
+    if (a.source === 'openai') sourceLabel = 'OpenAI Blog';
+    else if (isYT) sourceLabel = `YouTube — ${a.channel || 'Channel'}`;
+    else if (isHN) sourceLabel = 'Hacker News';
+    else if (isReddit) sourceLabel = 'Reddit';
+    
+    
+    
     const tags = (a.tags || []).slice(0, 4)
       .map(t => `<span class="tag" onclick="filterTag('${t}',event)">${t}</span>`).join('');
     const date = new Date(a.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });

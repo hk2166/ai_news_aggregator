@@ -14,7 +14,7 @@ class ChannelVideo(BaseModel):
 
 
 class YouTubeScraper:
-    def scrape_channel(self, channel_id: str, hours: int = 24) -> list[ChannelVideo]:
+    def scrape_channel(self, channel_id: str, hours: int = 96) -> list[ChannelVideo]:
         feed = feedparser.parse(f"https://www.youtube.com/feeds/videos.xml?channel_id={channel_id}")
         cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
         videos = []

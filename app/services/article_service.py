@@ -18,10 +18,11 @@ class ArticleInput:
     channel_name: Optional[str] = None
 
 
-def from_scraped_article(a) -> ArticleInput:
+def from_scraped_article(a, source_name: str = "openai", source_type: str = "blog") -> ArticleInput:
+    """Convert scraped article to ArticleInput with flexible source."""
     return ArticleInput(
         title=a.title, url=a.url, content_text=a.content_text,
-        published_at=a.published_at, source_name="openai", source_type="blog",
+        published_at=a.published_at, source_name=source_name, source_type=source_type,
     )
 
 
