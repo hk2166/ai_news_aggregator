@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI Pulse — Daily AI Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0a0a; --surface: #111111; --surface2: #1a1a1a; --border: #242424;
+  --text: #e8e4dc; --muted: #6a6560; --accent: #e87c3a; --accent2: #4a9eff; --tag-bg: #1e1e1e;
+}
+
+html, body { overflow-x: hidden; max-width: 100vw; }
+
+body {
+  background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 300; min-height: 100vh; line-height: 1.6;
+}
+
+body::after {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9999; opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+header {
+  border-bottom: 1px solid var(--border); padding: 0 2.5rem; display: flex; align-items: center;
+  justify-content: space-between; height: 64px; position: sticky; top: 0;
+  background: rgba(10,10,10,0.92); backdrop-filter: blur(12px); z-index: 100;
+}
+
+.logo { display: flex; align-items: baseline; gap: 0.5rem; }
+.logo-mark { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--text); letter-spacing: -0.03em; }
+.logo-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; border: 1px solid var(--accent); padding: 2px 6px; border-radius: 2px; }
+.header-stat { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--muted); }
+.header-stat span { color: var(--text); font-weight: 500; }
+
+.hero {
+  border-bottom: 1px solid var(--border); padding: 3rem 2.5rem 2.5rem;
+  display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 2rem;
+}
+.hero-eyebrow { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+.hero-title { font-family: 'Playfair Display', serif; font-size: clamp(2.2rem, 5vw, 3.6rem); font-weight: 400; line-height: 1.1; letter-spacing: -0.03em; color: var(--text); }
+.hero-title em { font-style: italic; color: var(--accent); }
+.hero-sub { margin-top: 1rem; font-size: 0.9rem; color: var(--muted); max-width: 480px; line-height: 1.7; }
+.hero-date { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--muted); letter-spacing: 0.06em; text-align: right; }
+
+.filter-bar {
+  border-bottom: 1px solid var(--border); padding: 0 2.5rem; display: flex; align-items: center;
+  overflow-x: auto; scrollbar-width: none;
+}
+.filter-bar::-webkit-scrollbar { display: none; }
+
+.filter-btn {
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted); background: none; border: none; border-bottom: 2px solid transparent;
+  padding: 1rem 1.25rem; cursor: pointer; white-space: nowrap; transition: color 0.15s, border-color 0.15s;
+}
+.filter-btn:hover { color: var(--text); }
+.filter-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; min-height: calc(100vh - 64px); }
+.feed { border-right: 1px solid var(--border); }
+
+.article-card {
+  border-bottom: 1px solid var(--border); padding: 1.75rem 2.5rem;
+  display: grid; grid-template-columns: 1fr auto; gap: 1.5rem; align-items: start;
+  cursor: pointer; transition: background 0.15s;
+}
+.article-card:hover { background: var(--surface); }
+
+.card-source { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent2); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+.card-source.yt { color: #e03535; }
+.source-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent2); }
+.source-dot.yt { background: #e03535; }
+
+.card-title { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 400; line-height: 1.35; letter-spacing: -0.01em; color: var(--text); margin-bottom: 0.6rem; transition: color 0.15s; }
+.article-card:hover .card-title { color: #fff; }
+
+.card-summary { font-size: 0.85rem; color: var(--muted); line-height: 1.65; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.card-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.85rem; }
+.tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); background: var(--tag-bg); border: 1px solid var(--border); padding: 2px 7px; border-radius: 2px; cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+.tag:hover { color: var(--accent); border-color: var(--accent); }
+.card-right { text-align: right; flex-shrink: 0; }
+.card-date { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: var(--muted); white-space: nowrap; }
+.card-link { display: inline-block; margin-top: 0.75rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s; }
+.card-link:hover { border-bottom-color: var(--accent); }
+
+.sidebar { padding: 2rem 1.75rem; display: flex; flex-direction: column; gap: 2rem; }
+
+.widget-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--border); }
+.stat-row { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--border); }
+.stat-row:last-child { border-bottom: none; }
+.stat-label { font-size: 0.8rem; color: var(--muted); }
+.stat-value { font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; color: var(--text); font-weight: 500; }
+.tag-list { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.25rem; }
+.tag-pill { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); background: var(--surface); border: 1px solid var(--border); padding: 4px 10px; border-radius: 2px; cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+.tag-pill:hover, .tag-pill.active { color: var(--accent); border-color: var(--accent); }
+
+.loading-state { padding: 4rem 2.5rem; text-align: center; color: var(--muted); }
+.loading-pulse { display: flex; gap: 6px; justify-content: center; margin-bottom: 1rem; }
+.pulse-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 1.2s ease-in-out infinite; }
+.pulse-dot:nth-child(2) { animation-delay: 0.2s; }
+.pulse-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes pulse { 0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); } 40% { opacity: 1; transform: scale(1); } }
+
+@media (max-width: 768px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { border-top: 1px solid var(--border); }
+  .hero { grid-template-columns: 1fr; }
+  .hero-date { display: none; }
+  header, .hero, .article-card, .filter-bar { padding-left: 1.25rem; padding-right: 1.25rem; }
+  .feed { border-right: none; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span class="logo-mark">AI Pulse</span>
+    <span class="logo-tag">Beta</span>
+  </div>
+  <div class="header-stat" id="header-count">&nbsp;</div>
+</header>
+
+<div class="hero">
+  <div>
+    <div class="hero-eyebrow">AI Intelligence Feed</div>
+    <h1 class="hero-title">What's moving in <em>AI</em><br>today</h1>
+    <p class="hero-sub">Scraped, summarized, and tagged from YouTube channels, OpenAI blog, and top AI publications — updated every 6 hours.</p>
+  </div>
+  <div class="hero-date" id="hero-date"></div>
+</div>
+
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="filterSource('all', this)">All sources</button>
+  <button class="filter-btn" onclick="filterSource('openai', this)">OpenAI</button>
+  <button class="filter-btn" onclick="filterSource('youtube', this)">YouTube</button>
+</div>
+
+<div class="layout">
+  <main class="feed" id="feed">
+    <div class="loading-state">
+      <div class="loading-pulse">
+        <div class="pulse-dot"></div><div class="pulse-dot"></div><div class="pulse-dot"></div>
+      </div>
+      <div class="loading-text">Fetching latest articles</div>
+    </div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="stats-widget">
+      <div class="widget-label">Feed stats</div>
+      <div class="stat-row"><span class="stat-label">Articles loaded</span><span class="stat-value" id="stat-total">—</span></div>
+      <div class="stat-row"><span class="stat-label">Sources active</span><span class="stat-value" id="stat-sources">—</span></div>
+      <div class="stat-row"><span class="stat-label">Last updated</span><span class="stat-value" id="stat-updated">—</span></div>
+    </div>
+
+    <div class="tags-widget">
+      <div class="widget-label">Trending topics</div>
+      <div class="tag-list" id="tag-list"></div>
+    </div>
+  </aside>
+</div>
+
+<script>
+const API = '';
+let allArticles = [];
+let activeTag = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('hero-date').textContent = new Date().toLocaleDateString('en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+  loadArticles();
+});
+
+async function loadArticles() {
+  try {
+    const res = await fetch(`${API}/articles?limit=30`);
+    if (!res.ok) throw new Error();
+    allArticles = await res.json();
+  } catch {
+    allArticles = [];
+  }
+  renderFeed(allArticles);
+  updateStats(allArticles);
+  renderTags(allArticles);
+  document.getElementById('header-count').innerHTML = `<span>${allArticles.length}</span> articles`;
+}
+
+function renderFeed(articles) {
+  const feed = document.getElementById('feed');
+  if (!articles.length) {
+    feed.innerHTML = `<div class="loading-state"><div class="loading-text">No articles found</div></div>`;
+    return;
+  }
+  feed.innerHTML = articles.map((a, i) => {
+    const isYT = a.source === 'youtube';
+    const sourceLabel = a.source === 'openai' ? 'OpenAI Blog'
+      : isYT ? `YouTube — ${a.channel || 'Channel'}`
+      : a.source;
+    const tags = (a.tags || []).slice(0, 4)
+      .map(t => `<span class="tag" onclick="filterTag('${t}',event)">${t}</span>`).join('');
+    const date = new Date(a.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const summary = a.summary || 'Summary processing…';
+
+    return `<article class="article-card" onclick="window.open('${a.url}','_blank')">
+      <div>
+        <div class="card-source ${isYT?'yt':''}">
+          <span class="source-dot ${isYT?'yt':''}"></span>${sourceLabel}
+        </div>
+        <h2 class="card-title">${a.title}</h2>
+        <p class="card-summary">${summary}</p>
+        <div class="card-tags">${tags}</div>
+      </div>
+      <div class="card-right">
+        <div class="card-date">${date}</div>
+        <a class="card-link" href="${a.url}" target="_blank" onclick="event.stopPropagation()">Read →</a>
+      </div>
+    </article>`;
+  }).join('');
+}
+
+function filterSource(source, btn) {
+  activeTag = null;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tag-pill').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderFeed(source === 'all' ? allArticles : allArticles.filter(a => a.source === source));
+}
+
+function filterTag(tag, event) {
+  event.stopPropagation();
+  if (activeTag === tag) {
+    activeTag = null;
+    document.querySelectorAll('.tag-pill').forEach(t => t.classList.remove('active'));
+    renderFeed(allArticles);
+    return;
+  }
+  activeTag = tag;
+  document.querySelectorAll('.tag-pill').forEach(t => t.classList.toggle('active', t.dataset.tag === tag));
+  renderFeed(allArticles.filter(a => (a.tags||[]).includes(tag)));
+}
+
+function updateStats(articles) {
+  document.getElementById('stat-total').textContent = articles.length;
+  document.getElementById('stat-sources').textContent = [...new Set(articles.map(a => a.source))].length;
+  document.getElementById('stat-updated').textContent = 'Just now';
+}
+
+function renderTags(articles) {
+  const freq = {};
+  articles.forEach(a => (a.tags||[]).forEach(t => { freq[t] = (freq[t]||0)+1; }));
+  document.getElementById('tag-list').innerHTML =
+    Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,16)
+      .map(([t]) => `<span class="tag-pill" data-tag="${t}" onclick="filterTag('${t}',event)">${t}</span>`).join('');
+}
+</script>
+</body>
+</html>

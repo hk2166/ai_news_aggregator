@@ -42,3 +42,5 @@ Thumbs.db
 # Documentation (if you want to keep these private)
 implementation_plan.md
 detailed_build_guide.md
+improvement.md
+*.md

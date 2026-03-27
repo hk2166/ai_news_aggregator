@@ -1,17 +1,15 @@
-"""
-APScheduler-based task scheduler for automated scraping.
-This runs in-process with your application.
-"""
+"""APScheduler-based task scheduler for automated scraping."""
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from datetime import datetime
 import logging
 
-from app.models.base import engine, Base
+from app.models.base import engine, Base, SessionLocal
 from app.scrapers.openai_scraper import OpenAIBlogScraper
 from app.scrapers.youtube import YouTubeScraper
 from app.services.article_service import save_articles, from_scraped_article, from_channel_video
 from app.services.pipeline import process_new_articles
+from app.services.search_service import update_search_vectors
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -28,19 +26,14 @@ YOUTUBE_CHANNELS = [
     "UCYwLV1Y8Z0zRZk0kqC7X3HQ",  # Matt Wolfe
     "UCv83tO5cePwHMt1952IVVHw",  # MattVidPro AI
     "UCx0L2ZdYfiq-tsAXb8IXpQg",  # The AI Advantage
-    "UCK8sQmJBp8GCxrOtXWBpyEA",  # Google
-    "UCl4nXWTkPOqmKlEmIN5_TJQ",  #Abdul Hasan
-    "UChpleBmo18P08aKCIgti38g",  #matt wolfe
-
 ]
 
 
 def scrape_all_sources():
-    """Main scraping job that runs every 6 hours"""
+    """Main scraping job that runs every 6 hours."""
     logger.info(f"🚀 Starting scheduled scrape at {datetime.now()}")
     
     try:
-        # Ensure tables exist
         Base.metadata.create_all(bind=engine)
         
         # Scrape OpenAI blog
@@ -71,6 +64,15 @@ def scrape_all_sources():
         r = process_new_articles()
         logger.info(f"Processed: {r['processed']}, Failed: {r['failed']}")
         
+        # Update search vectors
+        logger.info("Updating search vectors...")
+        db = SessionLocal()
+        try:
+            update_search_vectors(db)
+            logger.info("✅ Search vectors updated")
+        finally:
+            db.close()
+        
         logger.info(f"✅ Scrape completed successfully at {datetime.now()}")
         
     except Exception as e:
@@ -78,22 +80,22 @@ def scrape_all_sources():
 
 
 def start_scheduler():
-    """Initialize and start the background scheduler"""
+    """Initialize and start the background scheduler."""
     scheduler = BackgroundScheduler()
     
     # Run every 6 hours
     scheduler.add_job(
         scrape_all_sources,
-        trigger=CronTrigger(hour="*/6"),  # At 0:00, 6:00, 12:00, 18:00
+        trigger=CronTrigger(hour="*/6"),
         id="scrape_job",
         name="Scrape AI news sources",
         replace_existing=True
     )
     
-    # Optional: Run immediately on startup
+    # Run immediately on startup
     scheduler.add_job(
         scrape_all_sources,
-        trigger="date",  # Run once
+        trigger="date",
         id="startup_scrape",
         name="Initial scrape on startup"
     )
@@ -104,6 +106,5 @@ def start_scheduler():
     return scheduler
 
 
-# For manual testing
 if __name__ == "__main__":
     scrape_all_sources()
