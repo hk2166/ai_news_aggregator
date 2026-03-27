@@ -4,12 +4,12 @@ A Python application that scrapes AI news from multiple sources, stores them in 
 
 ## Features
 
-- 🔄 Automated scraping every 6 hours
-- 🤖 AI-powered article summarization and tagging (Gemini)
-- 🔍 Full-text search with PostgreSQL
-- 📊 Trending topics analysis
-- 🌐 Web dashboard with modern UI
-- 📡 REST API
+- Automated scraping every 6 hours
+-  AI-powered article summarization and tagging (Gemini)
+-  Full-text search with PostgreSQL
+-  Trending topics analysis
+-  Web dashboard with modern UI
+-  REST API
 
 ## Sources
 
@@ -114,6 +114,3 @@ trigger=CronTrigger(hour=8, minute=0)
 - **Scraping**: BeautifulSoup, feedparser, youtube-transcript-api
 - **Scheduling**: APScheduler
 
-## License
-
-MIT
