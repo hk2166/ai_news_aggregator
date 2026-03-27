@@ -17,7 +17,6 @@ A Python application that scrapes AI news from multiple sources, stores them in 
 - **YouTube** - 11 AI-focused channels
 - **Hacker News** - AI-related discussions
 - **Reddit** - r/MachineLearning, r/artificial, r/OpenAI, r/LocalLLaMA, r/StableDiffusion
-- **ArXiv** - Latest AI/ML research papers
 - **RSS Feeds** - Google AI, DeepMind, AWS ML, Microsoft AI, Hugging Face
 
 ## Quick Setup
