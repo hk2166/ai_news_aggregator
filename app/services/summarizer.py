@@ -4,9 +4,22 @@ from app.config import get_settings
 
 client = genai.Client(api_key=get_settings().gemini_api_key)
 
-PROMPT = """Analyze this article. Return ONLY valid JSON:
-{{"summary": "3 sentences: what, why it matters, impact.", "tags": ["tag1", "tag2", "tag3"]}}
-Tags: lowercase, 3-7, AI-specific. Article:\n{text}"""
+PROMPT = """You are an editor at a technical AI newsletter. Analyze this article.
+
+Return ONLY valid JSON, no markdown, no preamble:
+{{
+  "summary": "2-3 sentences. Lead with the most newsworthy fact. Be specific — name models, numbers, companies. Explain why it matters to an AI practitioner.",
+  "tags": ["tag1", "tag2"],
+  "importance": "high|medium|low",
+  "category": "research|product|industry|tutorial|opinion"
+}}
+
+Tag rules: 3-6 tags, lowercase, specific (use "gpt-4o" not "ai", "rlhf" not "training").
+Importance: high = major model release or breakthrough. medium = notable update. low = opinion/minor news.
+
+Article title: {title}
+Article text: {text}
+"""
 
 
 def process_article(title: str, content_text: str) -> dict:
