@@ -1,6 +1,6 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey, JSON, Index
+from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey, Index
 from sqlalchemy.sql import func
-from sqlalchemy.dialects.postgresql import TSVECTOR
+from sqlalchemy.dialects.postgresql import TSVECTOR, JSONB
 from app.models.base import Base
 
 
@@ -28,7 +28,7 @@ class Article(Base):
     url = Column(String(1000), unique=True)
     content_text = Column(Text, nullable=True)
     summary = Column(Text, nullable=True)
-    tags = Column(JSON, nullable=True, default=list)
+    tags = Column(JSONB, nullable=True, default=list)
     is_processed = Column(Boolean, default=False)
     published_at = Column(DateTime)
     created_at = Column(DateTime, server_default=func.now())
@@ -43,5 +43,4 @@ class Article(Base):
     __table_args__ = (
         Index('idx_article_search', 'search_vector', postgresql_using='gin'),
         Index('idx_article_published', 'published_at'),
-        Index('idx_article_tags', 'tags', postgresql_using='gin'),
     )
