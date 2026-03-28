@@ -9,7 +9,6 @@ from app.scrapers.openai_scraper import OpenAIBlogScraper
 from app.scrapers.youtube import YouTubeScraper
 from app.scrapers.hackernews_scraper import HackerNewsScraper
 from app.scrapers.reddit_scraper import RedditScraper
-from app.scrapers.arxiv_scraper import ArXivScraper
 from app.scrapers.rss_feed_scraper import RSSFeedScraper, AI_RSS_FEEDS
 from app.services.article_service import save_articles, from_scraped_article, from_channel_video
 from app.services.pipeline import process_new_articles
@@ -80,15 +79,6 @@ def scrape_all_sources():
             logger.info(f"Reddit: {r['saved']} saved, {r['skipped']} skipped")
         except Exception as e:
             logger.error(f"Error scraping Reddit: {e}")
-        
-        # Scrape ArXiv
-        logger.info("Scraping ArXiv...")
-        try:
-            arxiv_articles = ArXivScraper().scrape(hours=96, max_results=30)
-            r = save_articles([from_scraped_article(a, "arxiv", "research") for a in arxiv_articles])
-            logger.info(f"ArXiv: {r['saved']} saved, {r['skipped']} skipped")
-        except Exception as e:
-            logger.error(f"Error scraping ArXiv: {e}")
         
         # Scrape RSS feeds
         logger.info("Scraping RSS feeds...")
