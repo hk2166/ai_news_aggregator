@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 """Database migration to add search features."""
+import sys
+import os
+
+# Add parent directory to path so we can import app
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from sqlalchemy import text
 from app.models.base import SessionLocal
 from app.services.search_service import update_search_vectors
