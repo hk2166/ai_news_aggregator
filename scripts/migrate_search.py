@@ -16,6 +16,12 @@ def migrate():
     db = SessionLocal()
     
     try:
+        # First, create all tables if they don't exist
+        print("📦 Creating database tables...")
+        from app.models.base import Base, engine
+        Base.metadata.create_all(bind=engine)
+        print("✅ Tables created")
+        
         # Add columns
         print("📝 Adding columns...")
         db.execute(text("ALTER TABLE articles ADD COLUMN IF NOT EXISTS search_vector tsvector"))
