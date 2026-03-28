@@ -7,7 +7,6 @@ import logging
 from app.models.base import engine, Base, SessionLocal
 from app.scrapers.openai_scraper import OpenAIBlogScraper
 from app.scrapers.youtube import YouTubeScraper
-from app.scrapers.hackernews_scraper import HackerNewsScraper
 from app.scrapers.reddit_scraper import RedditScraper
 from app.scrapers.rss_feed_scraper import RSSFeedScraper, AI_RSS_FEEDS
 from app.services.article_service import save_articles, from_scraped_article, from_channel_video
@@ -20,15 +19,21 @@ logger = logging.getLogger(__name__)
 YOUTUBE_CHANNELS = [
     "UCn8ujwUInbJkBhffxqAPBVQ",  # Yannic Kilcher
     "UCbfYPyITQ-7l4upoX8nvctg",  # Two Minute Papers
-    "UC9x0AN7BWHpCDHSm9NiJFJQ",
-    "UCXuqSBlHAE6Xw-yeJA0Tunw",  # LTT
+    "UC9x0AN7BWHpCDHSm9NiJFJQ",  # Lex Fridman
+    "UCXuqSBlHAE6Xw-yeJA0Tunw",  # Linus Tech Tips
     "UCXUJJNoP1QupwsYIWFXmsZg",  # Tech Burner
     "UCOxwrh1M-3cYk1iS6b6pH8w",  # OpenAI
-    "UCXZCJLdBC09xxGZ6gcdrc6A",  # Two Minute Papers
+    "UCXZCJLdBC09xxGZ6gcdrc6A",  # Two Minute Papers (duplicate removed)
     "UC5lbdURzjB0irr-FTbjWN1A",  # AI Explained
     "UCYwLV1Y8Z0zRZk0kqC7X3HQ",  # Matt Wolfe
     "UCv83tO5cePwHMt1952IVVHw",  # MattVidPro AI
     "UCx0L2ZdYfiq-tsAXb8IXpQg",  # The AI Advantage
+    "UCbfYPyITQ-7l4upoX8nvctg",  # Two Minute Papers
+    "UC7NoUdfWp-ukXyJcc9IECsg",  # AI Coffee Break
+    "UCMLtBahDL8_XnC0KLsWo6Gw",  # AI Warehouse
+    "UCfzlCWGWYyIQ0aLC5w48gBQ",  # Sentdex
+    "UCYO_jab_esuFRV4b17AJtAw",  # 3Blue1Brown
+    "UCkw4JCwteGrDHIsyIIKo4tQ",  # Welch Labs
 ]
 
 
@@ -61,15 +66,6 @@ def scrape_all_sources():
                 logger.error(f"Error scraping channel {cid}: {e}")
         
         logger.info(f"YouTube total: {total_saved} saved, {total_skipped} skipped")
-        
-        # Scrape Hacker News
-        logger.info("Scraping Hacker News...")
-        try:
-            hn_articles = HackerNewsScraper().scrape(hours=96, limit=50)
-            r = save_articles([from_scraped_article(a, "hackernews", "forum") for a in hn_articles])
-            logger.info(f"HackerNews: {r['saved']} saved, {r['skipped']} skipped")
-        except Exception as e:
-            logger.error(f"Error scraping HackerNews: {e}")
         
         # Scrape Reddit
         logger.info("Scraping Reddit...")
@@ -114,12 +110,12 @@ def start_scheduler():
     """Initialize and start the background scheduler."""
     scheduler = BackgroundScheduler()
     
-    # Run every 6 hours
+    # Run every 2 hours
     scheduler.add_job(
         scrape_all_sources,
-        trigger=CronTrigger(hour="*/6"),
+        trigger=CronTrigger(hour="*/2"),
         id="scrape_job",
-        name="Scrape AI news sources",
+        name="Scrape AI news sources every 2 hours",
         replace_existing=True
     )
     
@@ -132,7 +128,7 @@ def start_scheduler():
     )
     
     scheduler.start()
-    logger.info("📅 Scheduler started - scraping every 6 hours")
+    logger.info("📅 Scheduler started - scraping every 2 hours")
     
     return scheduler
 

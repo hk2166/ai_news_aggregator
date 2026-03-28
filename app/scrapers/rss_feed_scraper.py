@@ -92,9 +92,30 @@ class RSSFeedScraper:
 
 # Popular AI-related RSS feeds
 AI_RSS_FEEDS = [
+    # Official AI Company Blogs
     'https://blog.google/technology/ai/rss/',  # Google AI Blog
     'https://www.deepmind.com/blog/rss.xml',  # DeepMind
+    'https://openai.com/news/rss.xml',  # OpenAI Blog
+    'https://www.anthropic.com/news/rss.xml',  # Anthropic (Claude)
+    
+    # Cloud Provider AI Blogs
     'https://aws.amazon.com/blogs/machine-learning/feed/',  # AWS ML Blog
     'https://blogs.microsoft.com/ai/feed/',  # Microsoft AI Blog
+    'https://cloud.google.com/blog/products/ai-machine-learning/rss',  # Google Cloud AI
+    
+    # AI Research & Tools
     'https://huggingface.co/blog/feed.xml',  # Hugging Face
+    'https://stability.ai/blog/rss.xml',  # Stability AI
+    'https://www.nvidia.com/en-us/research/rss.xml',  # NVIDIA Research
+    
+    # AI News Sites
+    'https://venturebeat.com/category/ai/feed/',  # VentureBeat AI
+    'https://techcrunch.com/category/artificial-intelligence/feed/',  # TechCrunch AI
+    'https://www.theverge.com/ai-artificial-intelligence/rss/index.xml',  # The Verge AI
+    'https://www.wired.com/feed/tag/ai/latest/rss',  # Wired AI
+    
+    # Developer & Research
+    'https://ai.googleblog.com/feeds/posts/default',  # Google AI Research
+    'https://blog.research.google/feeds/posts/default',  # Google Research
+    'https://engineering.fb.com/feed/',  # Meta Engineering (includes AI)
 ]

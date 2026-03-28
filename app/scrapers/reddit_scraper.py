@@ -24,7 +24,15 @@ class RedditScraper:
         'OpenAI',
         'LocalLLaMA',
         'StableDiffusion',
-        'ArtificialIntelligence'
+        'ArtificialIntelligence',
+        'ChatGPT',
+        'Bing',
+        'singularity',
+        'MLQuestions',
+        'learnmachinelearning',
+        'deeplearning',
+        'LanguageTechnology',
+        'computervision',
     ]
     
     def scrape(self, hours: int = 96, limit_per_sub: int = 10) -> List[ScrapedArticle]:
