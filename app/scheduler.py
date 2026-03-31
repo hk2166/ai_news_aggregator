@@ -46,7 +46,7 @@ def scrape_all_sources():
         
         # Scrape OpenAI blog
         logger.info("Scraping OpenAI blog...")
-        openai_articles = OpenAIBlogScraper().scrape(hours=96)
+        openai_articles = OpenAIBlogScraper().scrape(hours=120)
         r = save_articles([from_scraped_article(a, "openai", "blog") for a in openai_articles])
         logger.info(f"OpenAI: {r['saved']} saved, {r['skipped']} skipped")
         
@@ -57,7 +57,7 @@ def scrape_all_sources():
         
         for cid in YOUTUBE_CHANNELS:
             try:
-                videos = yt.scrape_channel(cid, hours=96)
+                videos = yt.scrape_channel(cid, hours=120)
                 r = save_articles([from_channel_video(v, cid) for v in videos])
                 total_saved += r['saved']
                 total_skipped += r['skipped']
@@ -70,7 +70,7 @@ def scrape_all_sources():
         # Scrape Reddit
         logger.info("Scraping Reddit...")
         try:
-            reddit_articles = RedditScraper().scrape(hours=96, limit_per_sub=10)
+            reddit_articles = RedditScraper().scrape(hours=120, limit_per_sub=10)
             r = save_articles([from_scraped_article(a, "reddit", "forum") for a in reddit_articles])
             logger.info(f"Reddit: {r['saved']} saved, {r['skipped']} skipped")
         except Exception as e:
@@ -80,7 +80,7 @@ def scrape_all_sources():
         logger.info("Scraping RSS feeds...")
         try:
             rss_scraper = RSSFeedScraper()
-            rss_articles = rss_scraper.scrape_multiple_feeds(AI_RSS_FEEDS, hours=96)
+            rss_articles = rss_scraper.scrape_multiple_feeds(AI_RSS_FEEDS, hours=120)
             r = save_articles([from_scraped_article(a, "rss", "blog") for a in rss_articles])
             logger.info(f"RSS Feeds: {r['saved']} saved, {r['skipped']} skipped")
         except Exception as e:
